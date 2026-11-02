@@ -1,0 +1,60 @@
+name: Azure Static Web Apps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'front/**'
+      - '.github/workflows/azure-static-web-apps.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: azure-static-web-apps-production
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate static app
+        shell: bash
+        run: |
+          test -s front/public/index.html
+          test -s front/public/styles.css
+          node -e "JSON.parse(require('node:fs').readFileSync('front/public/staticwebapp.config.json','utf8'))"
+
+      - name: Check Azure connection
+        id: azure
+        shell: bash
+        env:
+          AZURE_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+        run: |
+          if [ -n "$AZURE_TOKEN" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Azure deployment token is not configured. Deployment pending."
+            echo "### Deployment pending" >> "$GITHUB_STEP_SUMMARY"
+            echo "Static file validation passed. No deployment was attempted. Follow server/AZURE_SETUP.md, add AZURE_STATIC_WEB_APPS_API_TOKEN, then run this workflow on main." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Deploy frontend to Azure
+        if: steps.azure.outputs.ready == 'true'
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: front/public
+          api_location: ''
+          output_location: ''
+          skip_app_build: true
+          production_branch: main
