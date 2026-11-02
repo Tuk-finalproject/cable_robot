@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CableWorm FastAPI 연결 확인 페이지">
+  <title>CableWorm · API 연결 확인</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#17243b;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.65}
+    header{background:#fff;border-bottom:1px solid #e1e7f0}nav{max-width:920px;margin:auto;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{font-weight:800;font-size:20px;letter-spacing:-.6px}.brand span{color:#2962e8}.tag{font-size:12px;color:#60718a;background:#f0f4fa;padding:5px 12px;border-radius:20px}
+    main{max-width:920px;margin:48px auto;padding:0 24px 40px}.eyebrow{font-size:12px;letter-spacing:2px;font-weight:750;color:#2962e8}h1{font-size:clamp(26px,5vw,36px);letter-spacing:-1.4px;margin:8px 0}p{margin:0;color:#60718a}.card{background:white;border:1px solid #e1e7f0;border-radius:18px;padding:28px;margin-top:24px;box-shadow:0 8px 30px #17243b04}
+    .section-title{margin:0 0 20px;font-size:18px;letter-spacing:-.5px}.fields{display:grid;grid-template-columns:2fr 1fr;gap:16px}label{display:block;font-weight:650;font-size:13px;margin-bottom:7px}input{width:100%;padding:12px 14px;border:1px solid #ccd6e4;border-radius:9px;font:inherit;color:#17243b;background:#fff;min-width:0}input:focus{outline:3px solid #2962e826;border-color:#2962e8}.help{font-size:12px;margin-top:7px}.actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:22px}button{border:0;border-radius:9px;background:#2962e8;color:white;font:inherit;font-weight:650;padding:12px 22px;cursor:pointer}button:hover{background:#1f50c8}button:disabled{opacity:.6;cursor:wait}.timeout{font-size:12px;color:#74839a}
+    .result-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.result-head h2{margin:0;font-size:18px}.badge{border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;background:#edf1f7;color:#65748b}.badge.ok{background:#e4f6ed;color:#15764a}.badge.error{background:#fff0ed;color:#b34533}.badge.loading{background:#eaf0ff;color:#2962e8}.meta{display:flex;gap:26px;flex-wrap:wrap;margin:18px 0;color:#60718a;font-size:13px}.meta strong{color:#17243b;margin-left:6px}pre{background:#101d32;color:#dbe8ff;padding:20px;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;min-height:148px;max-height:420px;overflow:auto;font:13px/1.8 ui-monospace,Consolas,monospace;margin:0}.message{margin-top:14px;font-size:13px;white-space:pre-line;color:#465a76}.tips{margin-top:24px;border-left:3px solid #2962e8;padding:2px 0 2px 16px}.tips strong{font-size:13px}.tips p{font-size:13px;margin-top:4px}code{font-family:ui-monospace,Consolas,monospace}.origin{overflow-wrap:anywhere}footer{margin-top:30px;font-size:12px;color:#8995a7}
+    @media(max-width:600px){main{margin-top:28px}.card{padding:20px}.fields{grid-template-columns:1fr}nav{padding:16px 24px}.tag{font-size:11px}h1{letter-spacing:-1px}button{width:100%}}
+  </style>
+</head>
+<body>
+  <header><nav><div class="brand">Cable<span>Worm</span></div><span class="tag">API 연결 테스트</span></nav></header>
+  <main>
+    <div class="eyebrow">CONNECTION CHECK</div>
+    <h1>프론트와 서버를 연결해보세요.</h1>
+    <p>FastAPI 주소를 입력하면 실제 서버 응답을 확인할 수 있어요.</p>
+    <section class="card" aria-labelledby="settings-title">
+      <h2 class="section-title" id="settings-title">서버 설정</h2>
+      <form id="test-form">
+        <div class="fields">
+          <div><label for="base-url">FastAPI 서버 주소</label><input id="base-url" type="url" required value="http://172.190.21.183:8000" placeholder="https://api.example.com" spellcheck="false" autocomplete="off"><p class="help">프로토콜과 필요한 포트까지 입력해주세요.</p></div>
+          <div><label for="endpoint">확인할 경로 · GET</label><input id="endpoint" required value="/health" placeholder="/health" spellcheck="false" autocomplete="off"><p class="help">기본 경로를 확인하려면 / 입력</p></div>
+        </div>
+        <div class="actions"><button id="connect" type="submit">연결 확인하기 →</button><span class="timeout">최대 10초 동안 응답을 기다립니다.</span></div>
+      </form>
+    </section>
+    <section class="card" aria-labelledby="response-title" aria-busy="false" id="result">
+      <div class="result-head"><h2 id="response-title">서버 응답</h2><span id="status" class="badge" role="status">확인 전</span></div>
+      <div class="meta"><span>HTTP 상태<strong id="http-status">—</strong></span><span>응답 시간<strong id="duration">—</strong></span></div>
+      <pre id="response" tabindex="0" aria-label="서버 응답 본문">아직 요청을 보내지 않았습니다.</pre>
+      <p class="message" id="message" aria-live="polite">서버를 실행한 뒤 연결 확인 버튼을 눌러주세요.</p>
+    </section>
+    <aside class="tips"><strong>연결 전 확인</strong><p>배포된 HTTPS 웹에서는 API도 HTTPS 주소를 사용해주세요. FastAPI의 CORS 설정에는 아래 프론트 주소를 허용해야 합니다.</p><p class="origin">현재 프론트 주소: <code id="origin"></code></p></aside>
+    <footer>CableWorm · 이 페이지는 버튼을 눌렀을 때만 GET 요청을 보냅니다.</footer>
+  </main>
+  <script>
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+    $('origin').textContent = location.origin === 'null' ? '파일로 직접 열림 · 로컬 HTTP 서버 또는 Azure에서 실행해주세요.' : location.origin;
+    function badge(label, state) { $('status').textContent = label; $('status').className = 'badge ' + state; }
+    $('test-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      $('http-status').textContent = '—';
+      $('duration').textContent = '—';
+      $('response').textContent = '';
+      let target;
+      try {
+        const base = new URL($('base-url').value.trim());
+        if (!['http:', 'https:'].includes(base.protocol) || base.username || base.password || base.search || base.hash) throw new Error('서버 주소에는 http:// 또는 https:// 주소만 입력해주세요. 인증 정보·쿼리·#은 넣지 마세요.');
+        const path = $('endpoint').value.trim();
+        if (!path.startsWith('/') || path.startsWith('//') || path.includes('\\') || path.includes('#') || /\s/.test(path)) throw new Error('경로는 /health처럼 /로 시작하도록 입력해주세요.');
+        target = new URL(base.href.replace(/\/+$/, '') + path);
+        if (target.origin !== base.origin) throw new Error('서버 주소와 경로를 다시 확인해주세요.');
+        if (location.protocol === 'https:' && target.protocol === 'http:') throw new Error('HTTPS 웹에서 HTTP API 호출은 브라우저가 차단할 수 있습니다. API를 HTTPS로 제공한 뒤 그 주소를 입력해주세요. CORS 설정만으로는 해결되지 않습니다.');
+        if (location.protocol === 'file:') throw new Error('HTML 파일을 직접 열지 말고, 로컬 HTTP 서버 또는 Azure 웹 주소에서 접속해주세요.');
+      } catch (error) {
+        badge('주소 확인 필요', 'error');
+        $('message').textContent = error.message;
+        return;
+      }
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      const start = performance.now();
+      $('connect').disabled = true;
+      $('connect').textContent = '서버 응답 기다리는 중…';
+      $('result').setAttribute('aria-busy', 'true');
+      badge('요청 중', 'loading');
+      $('message').textContent = 'GET ' + target.href;
+      try {
+        const response = await fetch(target.href, { method: 'GET', signal: controller.signal, credentials: 'omit', cache: 'no-store' });
+        $('http-status').textContent = String(response.status) + (response.statusText ? ' ' + response.statusText : '');
+        const body = await response.text();
+        let formatted = body || '(응답 본문 없음)';
+        try { formatted = JSON.stringify(JSON.parse(body), null, 2); } catch (_) {}
+        $('response').textContent = formatted;
+        badge(response.ok ? '정상 응답' : 'HTTP 오류', response.ok ? 'ok' : 'error');
+        $('message').textContent = response.ok
+          ? '서버 응답을 읽었습니다. 아래 본문이 의도한 FastAPI 응답인지 확인해주세요.\nGET ' + target.href
+          : '서버가 HTTP 오류를 반환했습니다. 404이면 경로, 401·403이면 인증 설정을 확인해주세요.\nGET ' + target.href;
+      } catch (error) {
+        badge('연결 실패', 'error');
+        $('response').textContent = error.name + ': ' + error.message;
+        $('message').textContent = error.name === 'AbortError'
+          ? '10초 안에 응답이 완료되지 않았습니다. 서버 실행 상태·주소·포트·방화벽을 확인해주세요.'
+          : '브라우저가 응답을 읽지 못했습니다. 서버 실행 상태, HTTPS 인증서, VM 인바운드 규칙, FastAPI CORS를 확인해주세요. 브라우저 개발자 도구(F12)의 Console에서 상세 원인을 볼 수 있습니다.';
+      } finally {
+        clearTimeout(timer);
+        $('duration').textContent = Math.round(performance.now() - start) + ' ms';
+        $('connect').disabled = false;
+        $('connect').textContent = '연결 확인하기 →';
+        $('result').setAttribute('aria-busy', 'false');
+      }
+    });
+  </script>
+</body>
+</html>
