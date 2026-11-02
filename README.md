@@ -91,8 +91,8 @@ Static Web Apps는 프론트 배포 대상입니다. CM5 프로세스·ROS 2·ES
 
 현재 페이지는 빌드 의존성이 없습니다. `front/public/index.html`을 브라우저에서 열면 확인할 수 있습니다. API와 로봇은 연결되어 있지 않습니다.
 
-Azure 연결은 [server/AZURE_SETUP.md](server/AZURE_SETUP.md)를 따릅니다. 배포 토큰이 없으면 워크플로는 검증만 하고 **배포 대기**를 표시합니다. 토큰 등록 후 Actions에서 수동 실행하거나 프론트 변경을 `main`에 push하면 배포합니다.
+Azure 연결은 [server/AZURE_SETUP.md](server/AZURE_SETUP.md)를 따릅니다. 배포 토큰이 없으면 워크플로는 검증만 하고 **배포 대기**를 표시합니다. 토큰 등록 후 Actions에서 수동 실행하거나 프론트 변경을 `main`에 push하면 배포.
 
 ## 협업
 
-`feat/기능명`, `fix/수정내용`, `docs/문서명` 브랜치에서 작업하고 PR에 변경 내용과 확인 방법을 적습니다. 실제 지도, 현장 이미지, DB 파일과 비밀키는 저장소에 올리지 않습니다. 프로젝트 라이선스는 팀 협의 후 결정합니다.
+`feat/기능명`, `fix/수정내용`, `docs/문서명` 브랜치에서 작업하고 PR에 변경 내용과 확인 방법을 적기. 실제 지도, 현장 이미지, DB 파일과 비밀키는 저장소에 올리기 X
