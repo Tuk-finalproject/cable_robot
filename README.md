@@ -30,10 +30,10 @@ CableWorm은 인터넷 연결이 어려운 공간에서 주변을 탐색하고, 
 
 ```text
 cable_robot/
-├── back/                       # 백엔드: CM5 현장 API, 로컬 저장·ROS 2 연결
+├── local/                       # 장치: CM5 현장 API, 로컬 저장·ROS 2 연결
 ├── front/                      # 프론트엔드: 웹 화면
 │   └── public/                 # 현재 Azure에 배포하는 정적 소개 페이지
-├── server/                     # 클라우드 API 계획·Azure 인프라
+├── server(back)/                     # 클라우드 API 계획·Azure 인프라
 │   ├── infra/static-web-app.bicep
 │   └── AZURE_SETUP.md           # Azure 생성·GitHub 연결 절차
 └── .github/workflows/
