@@ -10,6 +10,7 @@ node_modules/
 dist/
 .vite/
 coverage/
+*.tsbuildinfo
 # Python
 __pycache__/
 *.py[cod]

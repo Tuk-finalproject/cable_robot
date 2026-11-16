@@ -1,24 +1,30 @@
-# front — 웹 프론트엔드
+# CableWorm 웹앱
 
-## 현재 구성
+React + TypeScript + Vite로 만든 CableWorm 현장 작업 화면입니다. 안드로이드와 아이폰의 모바일 브라우저에 맞춘 반응형 화면을 제공합니다.
 
-`public/`에는 배포 확인용 정적 소개 페이지만 있습니다. 지도 편집·승인·로봇 제어 기능은 아직 없습니다. `public/index.html`을 브라우저에서 열어 확인할 수 있습니다.
+## 현재 화면
 
-Azure 워크플로는 `front/public`을 빌드 없이 배포하므로 별도 패키지 설치가 필요하지 않습니다. 이 폴더에는 공개할 파일만 넣습니다.
+- 대시보드: 탐색 → 경로 선택·승인 → 견인선 설치 작업 흐름, 저장된 지도 목록·미리보기
+- 지도·경로: 샘플 지도에서 경유점 추가·삭제, 경로 초안 브라우저 저장
 
-## 예정 구성
+샘플 지도와 경로 편집은 **화면 시연용**입니다. 경로 초안은 브라우저의 `localStorage`에만 저장됩니다. 저장된 지도 목록은 `VITE_API_BASE_URL`을 설정하면 서비스 서버의 `/api/maps`에서 읽고, 선택한 지도 이미지는 Blob Storage를 사용하는 `/api/maps/{id}/image`에서 가져옵니다. 서버 주소가 없거나 HTTPS 웹에서 HTTP 서버를 가리키면 연결 대기 상태로 표시합니다. 이 버전은 API의 HTTP/HTTPS 설정을 변경하지 않습니다.
 
-React + TypeScript + Vite를 기반으로 react-konva 지도 레이어와 경로·경유점을 구현합니다. Zustand는 편집 상태를, TanStack Query는 API 요청을 관리하고 WebSocket으로 상태를 받습니다.
+## 로컬 실행
 
-지도 확대·이동 후에도 화면 좌표를 지도 미터 좌표로 정확히 변환해야 합니다. 원본 경로와 보정 경로를 구분하고 승인 후에는 현장 API의 저장 완료 응답을 확인합니다.
+```bash
+cd front
+npm ci
+npm run dev
+```
 
-## React 전환 시
+빌드는 `npm run build`로 확인합니다. 결과물은 `front/dist`에 생성되며 GitHub Actions가 Azure Static Web Apps로 배포합니다.
 
-1. 이 폴더에 Vite 앱과 잠금 파일을 추가하고 로컬 빌드가 성공하는지 확인합니다.
-2. 소개용 `public/index.html`, `public/styles.css`를 제거하거나 앱으로 옮깁니다. Vite의 앱 진입점은 `front/index.html`입니다.
-3. `public/staticwebapp.config.json`은 유지해 빌드 결과 루트에 복사되게 합니다.
-4. 워크플로의 `app_location`을 `front`, `output_location`을 `dist`로 바꾸고 `skip_app_build`를 제거합니다. 검증 단계도 새 빌드 구조에 맞게 변경합니다.
-5. SPA 경로를 도입할 때 navigationFallback을 추가하되 `/api/*`와 정적 자산은 제외합니다.
-6. 같은 빌드 결과를 CM5에서도 제공해 오프라인 현장 접속을 지원합니다.
+## 다음 연결
 
-클라우드 API URL은 나중에 공개 설정으로 추가합니다. 브라우저 빌드에 들어가는 환경변수는 사용자에게 노출되므로 비밀키·DB 접속 정보·Azure 배포 토큰을 넣지 않습니다.
+1. 서비스 서버의 데이터베이스와 Blob Storage에 지도를 등록하고 API를 HTTPS로 제공합니다.
+2. 프론트엔드에 `VITE_API_BASE_URL`을 설정해 지도 목록과 이미지를 연결합니다.
+3. 지도 좌표와 로봇 좌표를 맞추고 경로 보정 결과를 별도로 표시합니다.
+4. 승인 요청 후 로봇의 저장 완료 응답을 받은 경로만 설치에 사용합니다.
+5. 현장 접속을 위해 동일한 웹 빌드를 CM5에서도 제공합니다.
+
+브라우저에 포함되는 환경변수에는 비밀키·DB 접속 정보·Azure 배포 토큰을 넣지 않습니다.

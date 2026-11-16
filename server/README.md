@@ -1,13 +1,13 @@
 # server — 클라우드와 Azure 인프라
 
-인터넷 연결 후 사용할 클라우드 API와 배포 설정의 개발 공간입니다. 현재 클라우드 API 실행 코드는 없습니다.
+인터넷 연결 후 사용할 클라우드 API와 배포 설정의 개발 공간입니다. `api/`에는 저장된 지도를 PostgreSQL에서 조회하고 Blob Storage의 지도 이미지를 전달하는 FastAPI 코드가 있습니다.
 
 | 대상 | 구성 계획 | 현재 상태 |
 | --- | --- | --- |
-| 웹 | Azure Static Web Apps | Bicep와 GitHub Actions 준비, Azure 연결 대기 |
-| 클라우드 API | FastAPI | 구현·호스팅 방식 결정 예정 |
-| 이력 데이터 | PostgreSQL | 생성 예정 |
-| 지도 백업 | 별도 파일/오브젝트 저장소 | 설계 예정 |
+| 웹 | Azure Static Web Apps | GitHub Actions 배포 연결, React 모바일 화면 작성 |
+| 클라우드 API | FastAPI | 지도 목록·이미지 조회 엔드포인트 작성, VM 설정·배포 대기 |
+| 이력 데이터 | PostgreSQL | Azure 서버 생성, 지도 테이블 설정 대기 |
+| 지도 백업 | Azure Blob Storage | 계정·마운트 구성, 실제 지도 파일 저장 대기 |
 
 클라우드는 여러 작업 이력과 현장별 지도 백업을 담당합니다. 작업 중 인터넷 연결을 요구하지 않으며 현장 안전 판단은 로봇에 남깁니다.
 
