@@ -67,7 +67,7 @@ export default function SavedMapsPanel({
   return (
     <aside className="surface saved-maps-panel" aria-labelledby="saved-maps-title">
       <div className="saved-maps-heading">
-        <div><p className="section-kicker">SAVED MAPS</p><h2 id="saved-maps-title">저장된 지도</h2></div>
+        <h2 id="saved-maps-title">저장된 지도</h2>
         <button className="refresh-button" type="button" onClick={() => void loadMaps()} aria-label="지도 목록 새로고침" disabled={state === 'loading'}><RotateCcw size={17} /></button>
       </div>
       {state === 'ready' ? (
