@@ -7,7 +7,7 @@
 
 [프로젝트 구조](#프로젝트-구조) · [개발 계획](#개발-계획) · [Azure 배포 가이드](server/AZURE_SETUP.md)
 
-**설계 단계 · 초기 저장소 구성 완료 · 로봇 기능 구현 예정**
+**React 모바일 웹앱 시연 화면 구현 · 로봇 연동 준비 중**
 
 </div>
 
@@ -17,7 +17,7 @@
 
 CableWorm은 인터넷 연결이 어려운 공간에서 주변을 탐색하고, 사용자가 승인한 경로를 따라 견인선을 설치하는 로봇 프로젝트입니다. 현장 작업은 로봇 내부에서 수행하며, 클라우드는 인터넷 연결 후 이력 조회와 백업을 담당합니다.
 
-> 이 문서의 기능과 기술 조합은 제공된 구현 제안 발표자료를 바탕으로 한 개발 계획입니다. 현재 저장소에는 폴더 구성, 문서, 배포 확인용 정적 페이지와 Azure 설정이 포함되어 있습니다. 지도 편집기·API·로봇 제어는 아직 구현하지 않았습니다.
+> 이 문서의 기능과 기술 조합은 제공된 구현 제안 발표자료를 바탕으로 한 개발 계획입니다. 현재 저장소에는 React 대시보드와 지도 조회 API 코드가 있습니다. 실제 지도 파일·DB 기록·로봇 제어는 아직 연결되지 않았습니다.
 
 ## 작업 흐름
 
@@ -32,7 +32,8 @@ CableWorm은 인터넷 연결이 어려운 공간에서 주변을 탐색하고, 
 cable_robot/
 ├── local/                       # 장치: CM5 현장 API, 로컬 저장·ROS 2 연결
 ├── front/                      # 프론트엔드: 웹 화면
-│   └── public/                 # 현재 Azure에 배포하는 정적 소개 페이지
+│   ├── src/                    # React 지도 대시보드
+│   └── public/                 # Azure Static Web Apps 설정
 ├── server(back)/                     # 클라우드 API 계획·Azure 인프라
 │   ├── infra/static-web-app.bicep
 │   └── AZURE_SETUP.md           # Azure 생성·GitHub 연결 절차
@@ -43,7 +44,7 @@ cable_robot/
 | 영역 | 실행 위치 | 예정 역할 / 기술 |
 | --- | --- | --- |
 | [back](back/README.md) | 로봇 CM5 | FastAPI, WebSocket, SQLite, 지도 파일, ROS 2 연결 |
-| [front](front/README.md) | 휴대폰 브라우저 | React, TypeScript, Vite, react-konva, Zustand, TanStack Query |
+| [front](front/README.md) | 휴대폰 브라우저 | React, TypeScript, Vite, 반응형 지도 대시보드 |
 | [server](server/README.md) | Azure | FastAPI 클라우드 API, PostgreSQL, 작업 이력·지도 백업 |
 | 로봇 판단·제어 | CM5 / ESP32-S3 | ROS 2 Jazzy, RTAB-Map, robot_localization, Nav2 / ESP-IDF, FreeRTOS |
 
@@ -80,8 +81,9 @@ Static Web Apps는 프론트 배포 대상입니다. CM5 프로세스·ROS 2·ES
 ## 개발 계획
 
 - [x] back / front / server 구조와 역할 문서화
-- [x] Azure 배포 확인용 정적 페이지와 GitHub Actions 준비
-- [ ] Azure Static Web App 생성 및 배포 토큰 연결
+- [x] Azure Static Web Apps와 GitHub Actions 배포 연결
+- [x] React 모바일 지도 대시보드 구현
+- [x] 저장된 지도 목록·이미지 조회용 웹 화면과 FastAPI 엔드포인트 작성
 - [ ] **통합 시연 1**: 가짜 지도에서 경로 그리기 → 보정 → 승인 저장
 - [ ] **통합 시연 2**: 실제 센서 지도 생성 → 복귀 → 재투입 위치 확인
 - [ ] **통합 시연 3**: 승인 경로 주행 → 스풀 장력 제어 → 설치 결과 기록
